@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body,
+        ul,
+        li {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+
+        .box {
+            /* width: 1200px; */
+            height: 600px;
+            background-repeat: no-repeat;
+            background-image: url(img/2.jpg);
+            margin: 0 auto;
+        }
+
+        .menu {
+            width: 100%;
+            height: 50px;
+            background-color: rgb(124, 200, 238);
+            font-size: 30px;
+            color: #fff;
+            line-height: 50px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+
+        .level ul {
+            display: none;
+
+        }
+
+        .level li {
+            border-bottom: 1px solid #fff;
+            text-align: center;
+            cursor: pointer;
+            color: #fff;
+            background-color: orange;
+
+        }
+
+        .btn {
+            width: 300px;
+            height: 200px;
+            background-color: orange;
+            position: absolute;
+            top: 30%;
+            left: 40%;
+            display: none;
+        }
+
+        .btn input {
+            width: 300px;
+            height: 50px;
+            background-color: orange;
+            font-size: 25px;
+            color: #fff;
+            line-height: 30px;
+            text-align: center;
+            margin: 0 auto;
+            cursor: pointer;
+            border: none;
+            border-bottom: solid #fff 1px;
+        }
+
+        .tishi {
+            color: black;
+            font-size: 15px;
+        }
+
+        .grade {
+            width: 100px;
+            height: 50px;
+            background-color: orange;
+            line-height: 50px;
+            font-size: 20px;
+            position: absolute;
+            right: 0;
+            bottom: 55px;
+        }
+
+        .over {
+            width: 400px;
+            height: 100px;
+            background-color: orange;
+            color: #fff;
+            line-height: 100px;
+            font-size: 50px;
+            position: absolute;
+            text-align: center;
+            top: 30%;
+            left: 37%;
+            display: none;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+
+    </div>
+    <div class="menu">
+        菜单
+        <div class="tishi">
+            您有五次机会，如若机会用完，则游戏结束，每输入正确一个字符得10分
+        </div>
+        <div class="grade">
+            <span>得分:</span>
+            <span class="fen"></span>
+        </div>
+    </div>
+    <div class="btn">
+        <input class="start" type="button" value="开始游戏">
+        <input class="stop" type="button" value="暂停游戏">
+        <input class="guan" type="button" value="结束游戏">
+        <div class="level">
+            <input class="levelbox" type="button" value="难度等级">
+            <ul>
+                <li>简单</li>
+                <li>中等</li>
+                <li>好难</li>
+            </ul>
+        </div>
+    </div>
+    <div class="over">
+        GAME OVER
+    </div>
+
+
+
+    <script>
+        var box = document.querySelector(".box")
+        var texts = []
+        var fen = document.querySelector(".fen")
+        var levelbox = document.querySelector(".levelbox")
+        var levelul = document.querySelector(".level ul")
+        var levellist = document.querySelectorAll(".level ul li")
+        var menu = document.querySelector(".menu")
+        var menulist = document.querySelector(".btn")
+        var over = document.querySelector(".over")
+
+        var speedarry = [1, 5, 8]
+        var speed = 2
+
+
+        menu.onclick = function () {
+            menulist.style.display = "block"
+        }
+
+        levelbox.onclick = function () {
+            levelul.style.display = "block";
+        }
+        for (let i = 0; i < levellist.length; i++) {
+            levellist[i].onclick = function () {
+                speed = speedarry[i]
+                levelul.style.display = " none";
+            }
+        }
+
+        var flag = false
+        var score = 0
+        function create(num) {
+
+            var current = [];
+            for (var i = 0; i < num; i++) {    //生成随机字母
+                var charCode = 65 + Math.floor(Math.random() * 26);
+                current.push(String.fromCharCode(charCode))
+
+            }
+
+            for (var i = 0; i < current.length; i++) {
+                var text = document.createElement("div")
+                text.innerHTML = current[i];
+                text.style.cssText = "color:rgba(0,0,0,0);background-image:url(img/A_Z/" + current[i] + ".png);width:53px;height:77px;position:absolute;left:" + 1000 * Math.random() + "px;top:" + 300 * Math.random() + "px;"
+                box.appendChild(text)
+                texts.push(text)
+            }
+
+        }
+
+
+        var jihui = 0
+        var zimu = document.querySelectorAll(".box div")
+        var t = setInterval(function () {
+            for (var i = 0; i < texts.length; i++) {
+                texts[i].style.top = texts[i].offsetTop + speed + "px"
+                if (parseInt(texts[i].style.top) > 530) {
+                    texts[i].style.display = "none"
+                    jihui++;
+                    if (jihui > 5) {
+                        over.style.display = "block"
+                        clearInterval(t)
+                        setTimeout(function () {
+                            location.reload()
+                        }, 2000)
+                        flag = flase
+                    }
+
+                }
+            }
+
+        }, 50)
+
+
+
+        document.onkeydown = function (ev) {
+            var letter = String.fromCharCode(ev.keyCode)
+            console.log(letter)
+            console.log(zimu)
+            for (var i = 0; i < texts.length; i++) {
+
+                if (texts[i].innerHTML == letter) {
+                    score += 10;
+                    fen.innerHTML = score
+                    console.log(score)
+                    box.removeChild(texts[i])
+                    texts.splice(i, 1);
+                    create(1)
+
+
+                    break;
+
+                }
+            }
+        }
+
+        var start = document.querySelector(".start")
+        var stop = document.querySelector(".stop")
+        var guan = document.querySelector(".guan")
+        start.onclick = function () {
+            if (!flag) {
+                create(8);
+                flag = true
+            }
+
+            menulist.style.display = "none"
+        }
+
+
+        stop.onclick = function () {
+            alert("暂停")
+        }
+        guan.onclick = function () {
+
+            clearInterval(t)
+            setTimeout(function () {
+                location.reload()
+            }, 2000)
+            flag = flase
+        }
+    </script>
+</body>
+
+</html>
